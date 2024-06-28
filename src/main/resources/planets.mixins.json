@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.d0a1.planets.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BlockEntityMixin",
+    "CachedBlockPositionMixin",
+    "EntityMixin",
+    "LivingEntityMixin",
+    "NeighborUpdaterMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "WorldMixin"
+  ],
+  "client": [
+    "BlockModelRendererMixin",
+    "ClientWorldMixin",
+    "RenderLayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

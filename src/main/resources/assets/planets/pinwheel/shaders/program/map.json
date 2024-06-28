@@ -1,0 +1,20 @@
+{
+  "vertex": "planets:map",
+  "tesselation_control": "planets:map",
+  "tesselation_evaluation": "planets:map",
+  "fragment": "planets:map",
+  "definitions": [
+    {
+      "MIN_TESS_LEVEL": 4
+    },
+    {
+      "MAX_TESS_LEVEL": 64
+    },
+    {
+      "MIN_DISTANCE": 1
+    },
+    {
+      "MAX_DISTANCE": 6
+    }
+  ]
+}

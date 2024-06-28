@@ -1,0 +1,9 @@
+{
+  "vertex": "planets:entity/rendertype_entity_cutout_no_cull",
+  "tesselation_control": "planets:entity/rendertype_entity_cutout_no_cull",
+  "tesselation_evaluation": "planets:entity/rendertype_entity_cutout_no_cull",
+  "fragment": "planets:entity/rendertype_entity_cutout_no_cull",
+  "textures": {
+    "HeightMap": "planets:textures/misc/heightmap.png"
+  }
+}

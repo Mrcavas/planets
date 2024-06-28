@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "planets",
+  "version": "${version}",
+  "name": "planets",
+  "description": "im trying to bring the impossible into minecraft - spheres",
+  "authors": [
+    "Mrcavas"
+  ],
+  "contact": {
+    "repo": "https://github.com/Mrcavas/planets"
+  },
+  "license": "AGPL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "me.d0a1.planets.PlanetsClient"
+      }
+    ],
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "me.d0a1.planets.Planets"
+      }
+    ]
+  },
+  "mixins": [
+    "planets.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "${minecraft_version}",
+    "fabric": "*",
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=1.11.0+kotlin.2.0.0",
+    "veil": ">=1.0.0",
+    "fabric-key-binding-api-v1": "*"
+  }
+}
