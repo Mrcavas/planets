@@ -15,10 +15,10 @@ in vec4 normal;
 out vec4 fragColor;
 
 void main() {
+    #ifdef SPHERE_ENABLED
+    fragColor = vertexColor;
+    #else
+    #endif
     vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
     fragColor = linear_fog(color, vertexDistance, FogStart, FogEnd, FogColor);
-//    #ifdef SPHERE_ENABLED
-//    fragColor = vertexColor;
-//    #else
-//    #endif
 }

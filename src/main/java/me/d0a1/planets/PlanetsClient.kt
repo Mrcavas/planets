@@ -16,6 +16,7 @@ class PlanetsClient : ClientModInitializer {
 	companion object {
 		var sphereEnabled = true
 		lateinit var toggleShadersKeyBinding: KeyBinding
+		lateinit var veilRenderer: VeilRenderer
 	}
 
 	override fun onInitializeClient() {
@@ -33,9 +34,10 @@ class PlanetsClient : ClientModInitializer {
 		})
 
 		FabricVeilRendererEvent.EVENT.register(VeilRendererEvent { renderer: VeilRenderer ->
+			veilRenderer = renderer
 			renderer.editorManager.add(PlanetsEditor())
-			renderer.shaderDefinitions.define("rad", "2")
-			renderer.shaderDefinitions.define("sep", "5")
+			renderer.shaderDefinitions.define("rad", Planets.settings.radius.toString())
+			renderer.shaderDefinitions.define("sep", Planets.settings.separation.toString())
 		})
 	}
 }

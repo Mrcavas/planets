@@ -1,8 +1,8 @@
 package me.d0a1.planets
 
+import com.mojang.brigadier.arguments.IntegerArgumentType
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents
 import net.minecraft.command.argument.BlockPosArgumentType
 import net.minecraft.server.command.CommandManager.argument
 import net.minecraft.server.command.CommandManager.literal
@@ -15,57 +15,108 @@ import org.slf4j.LoggerFactory
 
 class Planets : ModInitializer {
 	companion object {
-		val RAD = 2
-		val SEP = 5
-		val LIN = (SEP - 1) / 2
-		val YB = -2
-		val YT = 4
-
 		val Logger: Logger = LoggerFactory.getLogger("Planets")
-		val linkedRegions = mutableSetOf<LinkedRegion>(
-			LinkedRegion.byDiff(
-				BlockPos(SEP, YB, RAD - 1), // 5 -1 1
-				BlockPos(SEP + LIN - 1, YT, -RAD), // 6 4 -2
-				BlockPos(-SEP, 0, 0) // 0 -1 1
-			), // br
-			LinkedRegion.byDiff(
-				BlockPos(-RAD - 1, YB, RAD - 1), // -3 -1 1
-				BlockPos(-RAD - LIN, YT, -RAD), // -4 4 -2
-				BlockPos(-SEP, 0, 0) // -8 -1 1
-			), // ry
-			LinkedRegion.byDiff(
-				BlockPos(-RAD - 1 - (RAD * 2 + SEP), YB, RAD - 1), // -12 -1 1
-				BlockPos(-RAD - LIN - (RAD * 2 + SEP), YT, -RAD), // -13 4 -2
-				BlockPos(-SEP, 0, 0) // -17 -1 1
-			), // yg
-			LinkedRegion.byDiff(
-				BlockPos(-RAD - 1 - 2 * (RAD * 2 + SEP), YB, RAD - 1), // -21 -1 1
-				BlockPos(-RAD - LIN - 2 * (RAD * 2 + SEP), YT, -RAD), // -22 4 -2
-				BlockPos(SEP * 3 + RAD * 8, 0, 0) // 10 -1 1
-			), // gb
-			//			LinkedRegion.diffed(
-			//				BlockPos(RAD, YB, RAD - 1), //
-			//				BlockPos(RAD - 1 + LIN, YT, -RAD), //
-			//				BlockPos(SEP, 0, 0)
-			//			), //
-		)
 
-		fun doIfBlockLinked(pos: BlockPos, cb: (BlockPos) -> Unit) {
-			for (region in linkedRegions) if (pos in region) return cb(pos + region.diff)
+		data class RegionSettings(val radius: Int, val separation: Int, val bottomY: Int, val topY: Int)
+		var settings = RegionSettings(4, 7, -2, 4)
+
+		private fun makeLinkedRegions(settings: RegionSettings): MutableSet<LinkedRegion> {
+			val RAD = settings.radius
+			val SEP = settings.separation
+			val YT = settings.topY
+			val YB = settings.bottomY
+			val LIN = (settings.separation - 1) / 2 // distance from islands being linked // 3
+
+			return mutableSetOf(
+				// X:
+				LinkedRegion(
+					BlockPos(RAD - 1 + SEP, YB, RAD - 1), // 10, 3
+					BlockPos(RAD - LIN + SEP, YT, -RAD), // 8, -4
+					BlockPos(-SEP, 0, 0) //
+				), // br
+				LinkedRegion(
+					BlockPos(-RAD - 1, YB, RAD - 1), //
+					BlockPos(-RAD - LIN, YT, -RAD), //
+					BlockPos(-SEP, 0, 0) //
+				), // ry
+				LinkedRegion(
+					BlockPos(-RAD - 1 - (RAD * 2 + SEP), YB, RAD - 1), //
+					BlockPos(-RAD - LIN - (RAD * 2 + SEP), YT, -RAD), //
+					BlockPos(-SEP, 0, 0) //
+				), // yg
+				LinkedRegion(
+					BlockPos(-RAD - 1 - 2 * (RAD * 2 + SEP), YB, RAD - 1), //
+					BlockPos(-RAD - LIN - 2 * (RAD * 2 + SEP), YT, -RAD), //
+					BlockPos(SEP * 3 + RAD * 8, 0, 0) //
+				), // gb
+				LinkedRegion(
+					BlockPos(3 * RAD - 1 + SEP + LIN, YB, RAD - 1), //
+					BlockPos(3 * RAD + SEP, YT, -RAD), //
+					BlockPos(-SEP * 3 + -RAD * 8, 0, 0) //
+				), // bg
+				LinkedRegion(
+					BlockPos(RAD - 1 + LIN, YB, RAD - 1), //
+					BlockPos(RAD, YT, -RAD), //
+					BlockPos(SEP, 0, 0) //
+				), // rb
+				LinkedRegion(
+					BlockPos(RAD - 1 + LIN - (2 * RAD + SEP), YB, RAD - 1), //
+					BlockPos(RAD - (2 * RAD + SEP), YT, -RAD), //
+					BlockPos(SEP, 0, 0) //
+				), // yr
+				LinkedRegion(
+					BlockPos(RAD - 1 + LIN - 2 * (2 * RAD + SEP), YB, RAD - 1), //
+					BlockPos(RAD - 2 * (2 * RAD + SEP), YT, -RAD), //
+					BlockPos(SEP, 0, 0) //
+				), // gy
+				// Z:
+				LinkedRegion(
+					BlockPos(RAD - 1, YB, 3 * RAD + SEP), //
+					BlockPos(-RAD, YT, 3 * RAD - 1 + LIN + SEP), //
+					BlockPos(0, 0, -2 * SEP - 6 * RAD) //
+				), // wB
+				LinkedRegion(
+					BlockPos(RAD - 1, YB, RAD), //
+					BlockPos(-RAD, YT, RAD - 1 + LIN), //
+					BlockPos(0, 0, SEP) //
+				), // rw
+				LinkedRegion(
+					BlockPos(RAD - 1, YB, -RAD - SEP), //
+					BlockPos(-RAD, YT, -RAD - 1 + LIN - SEP), //
+					BlockPos(0, 0, SEP) //
+				), // Br
+				LinkedRegion(
+					BlockPos(RAD - 1, YB, RAD - 1 + SEP), //
+					BlockPos(-RAD, YT, RAD - LIN + SEP), //
+					BlockPos(0, 0, -SEP) //
+				), // wr
+				LinkedRegion(
+					BlockPos(RAD - 1, YB, -RAD - 1), //
+					BlockPos(-RAD, YT, -RAD - LIN), //
+					BlockPos(0, 0, -SEP) //
+				), // rB
+				LinkedRegion(
+					BlockPos(RAD - 1, YB, -3 * RAD - 1 - SEP), //
+					BlockPos(-RAD, YT, -3 * RAD - LIN - SEP), //
+					BlockPos(0, 0, 2 * SEP + 6 * RAD) //
+				), // Bw
+			)
 		}
 
-		fun doIfPositionLinked(pos: Vec3d, cb: (LinkedRegion) -> Unit) {
-			for (region in linkedRegions) if (pos in region) return cb(region)
+		var linkedRegions = makeLinkedRegions(settings)
+
+		fun doIfBlockLinked(pos: BlockPos, cb: (BlockPos) -> Unit) {
+			for (region in linkedRegions) if (pos in region) return cb(region.map(pos))
+		}
+
+		fun doIfPositionLinked(pos: Vec3d, cb: (Vec3d) -> Unit) {
+			for (region in linkedRegions) if (pos in region) return cb(region.map(pos))
 		}
 
 		fun path(path: String) = Identifier("planets", path)
 	}
 
 	override fun onInitialize() {
-		ServerWorldEvents.UNLOAD.register { _, _ ->
-			linkedRegions.clear()
-		}
-
 		CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher, _, _ ->
 			dispatcher.register(
 				literal("link").then(
@@ -78,7 +129,7 @@ class Planets : ModInitializer {
 							val to = BlockPosArgumentType.getBlockPos(it, "to")
 							val diff = to - corner1
 
-							linkedRegions.add(LinkedRegion(corner1, corner2, to))
+							linkedRegions.add(LinkedRegion(corner1, corner2, diff))
 							for (pos in corner1..corner2) {
 								it.source.world.breakBlock(pos, false)
 								it.source.world.breakBlock(pos + diff, false)
@@ -93,6 +144,36 @@ class Planets : ModInitializer {
 					)
 				)
 			)
+			dispatcher.register(
+				literal("setregionsettings").then(
+					argument("radius", IntegerArgumentType.integer(2)).then(
+						argument("separation", IntegerArgumentType.integer(2)).then(
+							argument("ybottom", IntegerArgumentType.integer()).then(
+								argument("ytop", IntegerArgumentType.integer()).executes {
+									val radius = IntegerArgumentType.getInteger(it, "radius")
+									val separation = IntegerArgumentType.getInteger(it, "separation")
+									val ybottom = IntegerArgumentType.getInteger(it, "ybottom")
+									val ytop = IntegerArgumentType.getInteger(it, "ytop")
+
+									settings = RegionSettings(radius, separation, ybottom, ytop)
+									linkedRegions = makeLinkedRegions(settings)
+
+
+									PlanetsClient.veilRenderer.shaderDefinitions.define("rad", settings.radius.toString())
+									PlanetsClient.veilRenderer.shaderDefinitions.define("sep", settings.separation.toString())
+
+									1
+								}
+							)
+						)
+					)
+				)
+			)
+//			dispatcher.register(
+//				literal("placeplatform").executes {
+//					for (pos in )
+//				}
+//			)
 		})
 	}
 }

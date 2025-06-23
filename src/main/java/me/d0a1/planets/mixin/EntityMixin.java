@@ -23,8 +23,10 @@ public abstract class EntityMixin {
 	@Inject(at = @At("HEAD"), method = "setPos", cancellable = true)
 	public void setPos(double x, double y, double z, CallbackInfo ci) {
 		Vec3d pos = new Vec3d(x, y, z);
-		Planets.Companion.doIfPositionLinked(pos, (region) -> {
-			setPos(pos.x + region.getDiff().getX(), pos.y + region.getDiff().getY(), pos.z + region.getDiff().getZ());
+
+		Planets.Companion.doIfPositionLinked(pos, (newPos) -> {
+			setPos(newPos.x, newPos.y, newPos.z);
+
 			Planets.Companion.getLogger().info("setpos into linked area");
 			ci.cancel();
 			return Unit.INSTANCE;
@@ -34,8 +36,7 @@ public abstract class EntityMixin {
 	@Inject(at = @At("HEAD"), method = "move")
 	public void move(MovementType movementType, Vec3d movement, CallbackInfo ci) {
 		Vec3d to = pos.add(movement);
-		Planets.Companion.doIfPositionLinked(to, (region) -> {
-			Vec3d newPos = pos.add(Vec3d.of(region.getDiff()));
+		Planets.Companion.doIfPositionLinked(to, (newPos) -> {
 			setPos(newPos.x, newPos.y, newPos.z);
 			return Unit.INSTANCE;
 		});
