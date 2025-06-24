@@ -2,8 +2,8 @@
   "vertex": "planets:sphere/rendertype_solid",
   "fragment": "planets:sphere/rendertype_solid",
   "definitions": [
-    "rad",
-    "sep",
-    "sphere_enabled"
+    {"RAD": 4},
+    {"SEP": 7},
+    {"SPHERE_ENABLED": ""}
   ]
 }

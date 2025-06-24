@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" factoryName="Application" name="Minecraft Client" type="Application">
-    <option name="MAIN_CLASS_NAME" value="net.fabricmc.devlaunchinjector.Main"/>
-    <module name="planets.main"/>
-    <shortenClasspath name="ARGS_FILE"/>
-    <option name="VM_PARAMETERS" value="-Dfabric.dli.config=$ProjectFileDir$\.gradle\loom-cache\launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient"/>
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/"/>
+  <configuration default="false" name="Minecraft Client" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="net.fabricmc.devlaunchinjector.Main" />
+    <module name="planets.main" />
+    <shortenClasspath name="ARGS_FILE" />
+    <option name="VM_PARAMETERS" value="-Dfabric.dli.config=C:\Users\Mrcavas\IdeaProjects\planets\.gradle\loom-cache\launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.fabricmc.loader.impl.launch.knot.KnotClient -javaagent:C:\Users\Mrcavas\.gradle\caches\modules-2\files-2.1\net.fabricmc\sponge-mixin\0.15.5+mixin.0.8.7\22f9eb729e216a091673a574a5906dc1b9027fb3\sponge-mixin-0.15.5+mixin.0.8.7.jar -XX:+AllowEnhancedClassRedefinition" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run/" />
     <method v="2">
-      <option enabled="true" name="Make"/>
+      <option name="Make" enabled="true" />
     </method>
-  <classpathModifications/></configuration>
+  </configuration>
 </component>

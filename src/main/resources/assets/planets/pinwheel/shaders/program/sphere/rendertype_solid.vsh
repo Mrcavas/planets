@@ -1,6 +1,6 @@
 #include veil:fog
 #include veil:light
-#include veil:deferred_utils
+#include veil:space_helper
 
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;

@@ -1,6 +1,7 @@
 package me.d0a1.planets
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
+import foundry.veil.api.client.render.VeilRenderSystem
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.command.argument.BlockPosArgumentType
@@ -113,7 +114,7 @@ class Planets : ModInitializer {
 			for (region in linkedRegions) if (pos in region) return cb(region.map(pos))
 		}
 
-		fun path(path: String) = Identifier("planets", path)
+		fun path(path: String) = Identifier.of("planets", path)
 	}
 
 	override fun onInitialize() {
@@ -158,9 +159,8 @@ class Planets : ModInitializer {
 									settings = RegionSettings(radius, separation, ybottom, ytop)
 									linkedRegions = makeLinkedRegions(settings)
 
-
-									PlanetsClient.veilRenderer.shaderDefinitions.define("rad", settings.radius.toString())
-									PlanetsClient.veilRenderer.shaderDefinitions.define("sep", settings.separation.toString())
+									VeilRenderSystem.renderer().shaderDefinitions.set("RAD", settings.radius.toString())
+									VeilRenderSystem.renderer().shaderDefinitions.set("SEP", settings.separation.toString())
 
 									1
 								}
